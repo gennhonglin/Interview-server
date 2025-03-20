@@ -39,6 +39,11 @@ const FormData = mongoose.model("FormData", FormDataSchema);
 app.post("/submit", async (req, res) => {
     const { fName, lName, number, email} = req.body;
 
+    //If fields are missing
+    if (!fName || !lName || !number || !email) {
+        return res.status(400).json({ error: "Missing required fields" });
+    }
+
     //Validating the phone number
     if(!validator.isMobilePhone(number)) {
         return res.status(400).json({ error:"Please enter a valid phone number" });
@@ -56,14 +61,21 @@ app.post("/submit", async (req, res) => {
 
     try {
         await newFormDetails.save();
-        res.send("Data saved successfully!");
+        res.status(200).json({ message: "Data saved successfully!" });
     } catch (err) {
         console.log(err);
+        res.status(500).json({ error: "Error saving data to the database" });
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+//Export the app for testing purposes
+module.exports = app;
+
+//start the server if the file is called directly
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
+}
 
 
