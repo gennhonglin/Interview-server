@@ -30,6 +30,8 @@ const FormDataSchema = new mongoose.Schema({
     email: String,
 })
 
+//This is the model for the database
+//The model is used to interact with the database
 const FormData = mongoose.model("FormData", FormDataSchema);
 
 //This is the route that the front-end will send the data to
@@ -39,15 +41,17 @@ app.post("/submit", async (req, res) => {
 
     //Validating the phone number
     if(!validator.isMobilePhone(number)) {
-        return res.send("Please enter a valid phone number");
+        return res.status(400).json({ error:"Please enter a valid phone number" });
     }
 
     //Validating the email
     if(!validator.isEmail(email)) {
-        return res.send("Please enter a valid email address");
+        return res.status(400).json({ error:"Invalid Email Format" });
     }
     
+    //Creating a new instance of the FormData model
     const formDetails = {fName, lName, number, email};
+    //Saving the data to the database
     const newFormDetails = new FormData(formDetails);
 
     try {
